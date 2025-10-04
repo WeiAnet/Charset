@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "Charset Encoding Converter Tool",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "A minimalist Chrome browser extension for quickly switching webpage character encoding via context menu. https://github.com/WeiAnet",
+    "description": "Extension description"
+  },
+  "contextMenuTitle": {
+    "message": "Charset Converter",
+    "description": "Context menu main title"
+  },
+  "resetCharset": {
+    "message": "Reset to Default",
+    "description": "Reset encoding option"
+  }
+}

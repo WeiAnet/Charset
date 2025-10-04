@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "编码字符编码转换工具",
+    "description": "扩展名称"
+  },
+  "extDescription": {
+    "message": "一个极简的Chrome浏览器扩展，通过右键菜单快速切换网页字符编码。https://github.com/WeiAnet",
+    "description": "扩展描述"
+  },
+  "contextMenuTitle": {
+    "message": "编码字符转换",
+    "description": "右键菜单主标题"
+  },
+  "resetCharset": {
+    "message": "重置为默认编码",
+    "description": "重置编码选项"
+  }
+}

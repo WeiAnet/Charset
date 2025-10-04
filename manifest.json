@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "description": "__MSG_extDescription__",
+  "version": "1.0.0",
+  "default_locale": "zh_CN",
+  
+  "permissions": [
+    "contextMenus",
+    "declarativeNetRequest",
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+  
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["utils.js", "content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  
+  "declarative_net_request": {
+    "rule_resources": []
+  },
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "action": {},
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["utils.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

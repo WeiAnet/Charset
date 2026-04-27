@@ -106,7 +106,7 @@ class RuleManager {
     try {
       // 获取所有现有规则ID
       const existingRuleIds = await this.getAllRuleIds();
-      
+
       // 清除所有现有规则
       if (existingRuleIds.length > 0) {
         await chrome.declarativeNetRequest.updateDynamicRules({
@@ -160,7 +160,7 @@ class RuleManager {
 
       // 生成唯一规则ID
       const ruleId = this.generateUniqueRuleId();
-      
+
       const rule = {
         id: ruleId,
         priority: 1,
@@ -259,7 +259,7 @@ class RuleManager {
     try {
       // 先确保规则管理器已初始化
       await this.initialize();
-      
+
       const charsetSettings = await chrome.storage.local.get('charset_settings');
       const settings = charsetSettings.charset_settings || {};
 
@@ -345,24 +345,24 @@ class MenuManager {
       if (menuId.startsWith('charset-') && menuId !== 'charset-reset') {
         // 提取编码
         const charset = menuId.replace('charset-', '');
-        
+
         if (SUPPORTED_CHARSETS[charset]) {
           await ruleManager.createCharsetRule(hostname, charset);
           await storage.saveCharsetForSite(hostname, charset);
-          
+
           // 刷新页面以应用新编码
           chrome.tabs.reload(tab.id);
-          
+
           console.log(`Background: Applied charset ${charset} to ${hostname}`);
         }
       } else if (menuId === 'charset-reset') {
         // 重置编码
         await ruleManager.removeCharsetRule(hostname);
         await storage.removeCharsetForSite(hostname);
-        
+
         // 刷新页面
         chrome.tabs.reload(tab.id);
-        
+
         console.log(`Background: Reset charset for ${hostname}`);
       }
     } catch (error) {
@@ -379,18 +379,18 @@ const menuManager = new MenuManager();
 // 扩展安装/启动时的初始化
 chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('Background: Extension installed/updated');
-  
+
   try {
     await ruleManager.initialize();
     await menuManager.createContextMenus();
-    
+
     if (details.reason === 'install') {
       console.log('Background: First time installation');
 
       try {
         const encodedUrl = 'aHR0cHM6Ly9ibG9nLndlaWFuZXQuY29t';
         const welcomeUrl = atob(encodedUrl);
-        
+
         await chrome.tabs.create({
           url: welcomeUrl,
           active: true
@@ -412,7 +412,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 // 扩展启动时恢复规则
 chrome.runtime.onStartup.addListener(async () => {
   console.log('Background: Extension started');
-  
+
   try {
     await menuManager.createContextMenus();
     await ruleManager.restoreSavedRules(); // restoreSavedRules中已包含initialize
@@ -434,12 +434,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const { hostname, charset: updateCharset } = message;
         await ruleManager.createCharsetRule(hostname, updateCharset);
         await storage.saveCharsetForSite(hostname, updateCharset);
-        
+
         // 刷新当前标签页
         if (sender.tab) {
           chrome.tabs.reload(sender.tab.id);
         }
-        
+
         sendResponse({ success: true });
         break;
 
@@ -447,12 +447,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const removeHostname = message.hostname;
         await ruleManager.removeCharsetRule(removeHostname);
         await storage.removeCharsetForSite(removeHostname);
-        
+
         // 刷新当前标签页
         if (sender.tab) {
           chrome.tabs.reload(sender.tab.id);
         }
-        
+
         sendResponse({ success: true });
         break;
 
@@ -480,7 +480,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       const url = new URL(tab.url);
       const hostname = url.hostname;
       const savedCharset = await storage.getCharsetForSite(hostname);
-      
+
       // 只有在没有活动规则且有保存的编码设置时才重新应用
       if (savedCharset && !ruleManager.activeRules.has(hostname)) {
         const ruleId = await ruleManager.createCharsetRule(hostname, savedCharset);
@@ -504,15 +504,15 @@ function encodeUrl(url) {
   // Base64编码
   const base64 = btoa(url);
   console.log(`Base64 encoded: ${base64}`);
-  
+
   // 十六进制编码
   const hex = url.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
   console.log(`Hex encoded: ${hex}`);
-  
+
   // 简单字符替换编码（每个字符+1）
   const shifted = url.replace(/(.)/g, (char) => String.fromCharCode(char.charCodeAt(0) + 1));
   console.log(`Shifted encoded: ${shifted}`);
-  
+
   return { base64, hex, shifted };
 }
 
@@ -531,20 +531,20 @@ function decodeUrl(encoded, type = 'base64') {
 }
 
 // 全局调试函数，可在开发者工具中调用
-globalThis.debugCharsetExtension = async function() {
+globalThis.debugCharsetExtension = async function () {
   console.log('=== Chrome字符编码切换器调试信息 ===');
   await ruleManager.debugPrintRules();
-  
+
   const charsetSettings = await chrome.storage.local.get('charset_settings');
   console.log('Stored Charset Settings:', charsetSettings.charset_settings || {});
-  
+
   const activeRulesStorage = await storage.getActiveRules();
   console.log('Stored Active Rules:', activeRulesStorage);
   console.log('=================================');
 };
 
 // 全局重置函数
-globalThis.resetCharsetExtension = async function() {
+globalThis.resetCharsetExtension = async function () {
   console.log('Resetting charset extension...');
   await ruleManager.initialize();
   await chrome.storage.local.clear();
